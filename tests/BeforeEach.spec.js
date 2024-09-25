@@ -9,7 +9,7 @@ let page;
 test.beforeEach(async () => {
     // Launch the browser
     browser = await chromium.launch({
-        headless: false, // Set to true if you want to run tests in headless mode
+        headless: true, // Set to true if you want to run tests in headless mode
     });
 
     // Create a new browser context with microphone and camera permissions

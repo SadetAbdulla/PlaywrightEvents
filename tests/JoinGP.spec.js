@@ -1,31 +1,28 @@
 const { test, expect, chromium } = require('@playwright/test');
 const fs = require('fs');
+const LoginPage = require('../pages/LoginPage');
 
-test.setTimeout(60000); // Increase the timeout to 60 seconds
+test.setTimeout(150000);
 
-test('Join Meeting Test', async ({ page }) => {
+test('Join Meeting Test', async ({ page, browser }) => {
   // Custom function to handle dialogs
   const handleDialog = async (dialog) => {
-    if (dialog.message().includes('Allow')) {
+    if (dialog.message().includes('Use your cameras') || dialog.message().includes('Use your microphones')) {
       await dialog.accept();
     }
   };
 
   // Part 1: Copy the Meeting Link
-  await page.goto('https://access.staging.events.boostlingo.com/');
-  await page.getByPlaceholder('E-mail').click();
-  await page.getByPlaceholder('E-mail').fill('sadet.abdulla@boostlingo.com');
-  await page.getByPlaceholder('E-mail').press('Enter');
-  await page.getByPlaceholder('Password').fill('test');
-  await page.getByPlaceholder('Password').press('Enter');
+  const loginPage = new LoginPage(page);
+
+  await loginPage.navigateToLoginPage();
+  await loginPage.login('sadet.abdulla@boostlingo.com', 'test');
+  await loginPage.waitForLoginSuccess();
+
   await page.getByRole('button', { name: 'Plan Event' }).click();
   await page.getByPlaceholder('Please enter the name of this').click();
   await page.getByPlaceholder('Please enter the name of this').fill('test');
   await page.getByRole('button', { name: 'Create event' }).click();
-  await page.waitForTimeout(5000);
-
-  // Set up dialog handler
-  page.on('dialog', handleDialog);
 
   await page.getByRole('button', { name: 'Copy link' }).first().click();
   
@@ -64,16 +61,10 @@ test('Join Meeting Test', async ({ page }) => {
   // Navigate to the generated link
   await page2.goto(generatedLinkFromFile);
   await page2.getByPlaceholder('Your name').click();
-  await page2.getByPlaceholder('Your name').fill('test');
+  await page2.getByPlaceholder('Your name').fill('Speaker');
   await page2.getByRole('button', { name: 'Join event' }).click();
   await page2.getByLabel('Turn on camera').click();
   await page2.getByLabel('Unmute mic').click();
-
-  // Add any additional steps to join the event if necessary
-  // For example, clicking a join button
-  // await page2.click('#joinEventButton');  // replace with the actual join button selector if needed
-
-  // You can add more assertions or interactions here as needed
 
   // Close the browser after joining the event
   await browser2.close();

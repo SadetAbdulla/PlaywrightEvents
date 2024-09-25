@@ -28,6 +28,9 @@ class LoginPage {
     async waitForLoginSuccess(timeout = 5000) {
         await this.page.waitForTimeout(timeout);
     }
+    // async waitForLoginSuccess() {
+    //     await this.page.waitForNavigation({ waitUntil: 'networkidle' });
+    // }
 
     async handleDialog() {
         this.page.on('dialog', async (dialog) => {

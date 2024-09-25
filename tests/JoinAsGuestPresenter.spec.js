@@ -1,18 +1,13 @@
 const { test, expect, chromium } = require('@playwright/test');
 const fs = require('fs');
+const LoginPage = require('../pages/LoginPage');
+
 
 test('Join Meeting Test', async ({ page }) => {
   // Part 1: Copy the Meeting Link
-  await page.goto('https://access.staging.events.boostlingo.com/');
-  await page.getByPlaceholder('E-mail').click();
-  await page.getByPlaceholder('E-mail').fill('sadet.abdulla@boostlingo.com');
-  await page.getByPlaceholder('E-mail').press('Enter');
-  await page.getByPlaceholder('Password').fill('test');
-  await page.getByPlaceholder('Password').press('Enter');
-  await page.getByRole('button', { name: 'Plan Event' }).click();
-  await page.getByPlaceholder('Please enter the name of this').click();
-  await page.getByPlaceholder('Please enter the name of this').fill('test');
-  await page.getByRole('button', { name: 'Create event' }).click();
+  await loginPage.navigateToLoginPage();
+  await loginPage.login('sadet.abdulla@boostlingo.com', 'test');
+  await loginPage.waitForLoginSuccess();
   await page.waitForTimeout(5000);
   await page.handleDialog();
 
